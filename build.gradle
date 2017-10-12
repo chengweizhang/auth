@@ -1,0 +1,36 @@
+plugins {
+    id 'org.springframework.boot' version '1.5.7.RELEASE'
+}
+
+allprojects {
+    group 'com.zcw'
+    version '1.0-SNAPSHOT'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+subprojects {
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    dependencies {
+        compile("org.springframework.boot:spring-boot-starter-web:1.5.7.RELEASE")
+
+        //security
+        compile("org.springframework.boot:spring-boot-starter-security:1.5.7.RELEASE")
+
+        //monitor
+        compile("org.springframework.boot:spring-boot-starter-actuator:1.5.7.RELEASE")
+
+        //test
+        testCompile("org.springframework.boot:spring-boot-starter-test:1.5.7.RELEASE")
+        compile("com.h2database:h2:1.4.196")
+
+        //dev
+        compile("org.springframework.boot:spring-boot-devtools:1.5.7.RELEASE")
+    }
+}
