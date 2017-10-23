@@ -16,7 +16,7 @@ public abstract class BaseEntity<T> implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    protected String id;
 
     @CreationTimestamp
     private Date createTime;

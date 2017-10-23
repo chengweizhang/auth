@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <title>计费系统</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=9"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="杭州天谷信息科技有限公司">
+    <link type="text/css" rel="stylesheet" href="3rdparty/css/bootstrap.min.css"/>
+    <link type="text/css" rel="stylesheet" href="3rdparty/css/bootstrap-table.min.css"/>
+    <link type="text/css" rel="stylesheet" href="3rdparty/css/bootstrap-theme.min.css"/>
+    <link type="text/css" rel="stylesheet" href="css/style-menu.css"/>
+    <link type="text/css" rel="stylesheet" href="css/alert.css"/>
+    <script src="3rdparty/js/jquery-2.1.4.min.js"></script>
+    <script src="3rdparty/js/bootstrap.min.js"></script>
+    <script src="3rdparty/js/bootstrap-table.min.js"></script>
+    <script src="3rdparty/js/bootstrap-table-zh-CN.min.js"></script>
+    <script src="3rdparty/js/jquery.media.js"></script>
+    <script src="3rdparty/js/jquery.paging.min.js"></script>
+    <script src="3rdparty/js/mustache.js"></script>
+
+    <script src="js/alert.js"></script>
+    <script src="js/service.js"></script>
+    <script src="js/userJ.js"></script>
+    <script src="js/menuSubscribe.js"></script>
+    <script src="js/dialog.js"></script>
+</head>
+
+<body>
+<div class="main page-wrap">
+    <!-- 头部html start-->
+    <nav class="nav navbar-default header">
+        <div class="container">
+            <div class="navbar-header logo yahei">
+                <img src="images/manage_logo.png" style="cursor:pointer;margin-top: -12px;">
+                <h1 class="font18">套餐管理</h1>
+                <!--<h1 class="font18" >账户管理</h1>-->
+            </div>
+        </div>
+    </nav>
+    <!-- 头部html end-->
+    <!-- 内容html start-->
+    <div class="col-lg-1"></div>
+    <div class="col-lg-10">
+        <div class="contDIV1 margin-top45" id="main">
+            <div class="row">
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#updateDiv">
+                    <span class="glyphicon glyphicon-user"></span>新增用户
+                </button>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#consumeMenuDiv">
+                    <span class="glyphicon glyphicon-user"></span>给用户分配权限
+                </button>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#subscribeFreeMenuDiv">
+                    <span class="glyphicon glyphicon-user"></span>订阅试用套餐
+                </button>
+                <button type="button" class="btn btn-default" data-toggle="modal"
+                        data-target="#createAndUpdateOrderDiv">
+                    <span class="glyphicon glyphicon-user"></span>给特定用户补订单
+                </button>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#addCouponDiv">
+                    <span class="glyphicon glyphicon-user"></span>给特定用户分配优惠券
+                </button>
+                <button type="button" class="btn btn-default" data-toggle="modal" id="batchSubscribeFreeMenu">
+                    <span class="glyphicon glyphicon-user"></span>给实名用户（state=9）批量订阅试用免费签署套餐
+                </button>
+                <button type="button" class="btn btn-default" data-toggle="modal" data-target="#logDiv">
+                    <span class="glyphicon glyphicon-user"></span>登录
+                </button>
+                <!-- <button type="button" class="btn btn-default" id="logout">
+                    <span class="glyphicon glyphicon-user"></span>退出
+                </button> -->
+
+                <div style="margin-top: 15px;margin-bottom: 15px;">
+                    <input type="text" name="query" class="form-control" style="width:330px; display: inline-block;"
+                           id="keyword" placeholder="套餐名">
+                    <button type="button" class="btn" id="query">查询</button>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>id</th>
+                        <th>姓名</th>
+                        <th>用户名</th>
+                        <th>手机</th>
+                        <th>电子邮箱</th>
+                        <th>角色</th>
+                        <th>状态</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="target">
+                    <script id="template" type="x-tmpl-mustache">
+						{{#data}}
+						<tr>
+							<td style="vertical-align: middle;">{{id}}</td>
+							<td style="vertical-align: middle;">{{name}}</td>
+							<td style="vertical-align: middle;">{{userName}}</td>
+							<td style="vertical-align: middle;">{{mobile}}</td>
+							<td style="vertical-align: middle;">{{email}}</td>
+							<td style="vertical-align: middle;">{{roles}}</td>
+							<td style="vertical-align: middle;">{{status}}</td>
+							<td data-id="{{id}}">
+								<button class="btn" name="delete" id="delete">
+									<span class="glyphicon glyphicon-remove"></span>&nbsp;&nbsp;Delete
+								</button>
+								<button type="button" class="btn" data-toggle="modal" data-target="#updateDiv" data-id="{{id}}"><span class="glyphicon glyphicon-pencil"></span>修改
+								</button>
+								<button type="button" class="btn" id="aliPay">支付</button>
+							</td>
+						</tr>
+						{{/data}}
+
+                    </script>
+                    </tbody>
+                </table>
+                <div id="pagination" style="text-align: center"></div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-1"></div>
+</div>
+
+<!--name详情-->
+<div class="modal fade" id="updateDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel">用户</h4>
+            </div>
+            <div class="modal-body">
+                <form id="form">
+                    <div class="form-group">
+                        <label for="name" class="control-label">姓名：</label>
+                        <input type="text" name="name" class="form-control" id="name">
+                    </div>
+                    <div class="form-group">
+                        <label for="userName" class="control-label">用户名</label>
+                        <input type="text" name="userName" class="form-control" id="userName">
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile" class="control-label">mobile</label>
+                        <input type="text" name="mobile" class="form-control" id="mobile">
+                    </div>
+                    <div class="form-group">
+                        <label for="email" class="control-label">电子邮箱</label>
+                        <input type="text" name="email" class="form-control" id="email">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="saveOrUpdate">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end 套餐详情-->
+
+<!--登录-->
+<div class="modal fade" id="logDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel2">登录</h4>
+            </div>
+            <div class="modal-body">
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="data-name" class="control-label">token：</label>
+                        <input type="text" name="token" class="form-control" id="data-token">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-price" class="control-label">equipId：</label>
+                        <input type="text" name="equipId" class="form-control" id="data-equipId">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="login">登录</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end 登录-->
+
+<!--签署文件-消费套餐中的签署次数-->
+<div class="modal fade" id="consumeMenuDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel3">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel3">消费套餐中的签署次数</h4>
+            </div>
+            <div class="modal-body">
+                <form id="consumeMenu-form">
+                    <div class="form-group">
+                        <label for="accountId" class="control-label">Account Id</label>
+                        <input type="text" name="signlogId" class="form-control" id="accountId">
+                    </div>
+                    <div class="form-group">
+                        <label for="roleId" class="control-label">Role Id</label>
+                        <input type="text" name="accountId2" class="form-control" id="roleId">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="consumeMenu">分配</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end签署文件-消费套餐中的签署次数-->
+
+<!--订阅试用套餐-->
+<div class="modal fade" id="subscribeFreeMenuDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel4">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel4">订阅试用套餐</h4>
+            </div>
+            <div class="modal-body">
+                <form id="subscribeFreeMenu-form">
+                    <div class="form-group">
+                        <label for="data-accountId" class="control-label">用户Id（UUID）</label>
+                        <input type="text" name="signlogId" class="form-control" id="data-accountId">
+                    </div>
+                    <div class="form-group">
+                        <label for="data-productType" class="control-label">产品类型:SIGN（签署服务）, TIMESTAMP(时间戳服务)</label>
+                        <input type="text" name="signlogId" class="form-control" id="data-productType">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="subscribeFreeMenu">订阅</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end订阅试用套餐-->
+
+<!--给特定用户补订单-->
+<div class="modal fade" id="createAndUpdateOrderDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel5">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel5">给特定用户补订单</h4>
+            </div>
+            <div class="modal-body">
+                <form id="createAndUpdateOrder-form">
+                    <div class="form-group">
+                        <label for="Order-accountId" class="control-label">用户Id（UUID）</label>
+                        <input type="text" name="accountId" class="form-control" id="Order-accountId">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-menuId" class="control-label">套餐Id</label>
+                        <input type="text" name="menuId" class="form-control" id="Order-menuId">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-totalSignNum" class="control-label">总量</label>
+                        <input type="text" name="totalSignNum" class="form-control" id="Order-totalSignNum">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-price" class="control-label">价格</label>
+                        <input type="text" name="price" class="form-control" id="Order-price" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-validDate" class="control-label">订单生效时间</label>
+                        <input type="date" name="validDate" class="form-control" id="Order-validDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-endDate" class="control-label">订单到期时间</label>
+                        <input type="date" name="endDate" class="form-control" id="Order-endDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="createAndUpdateOrder">补单</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end给特定用户补订单-->
+
+<!--给特定用户分配优惠券-->
+<div class="modal fade" id="addCouponDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel5">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="addCouponDivLabel5">给特定用户分配优惠券</h4>
+            </div>
+            <div class="modal-body">
+                <form id="addCouponDiv-form">
+                    <div class="form-group">
+                        <label for="Order-accountId" class="control-label">用户Id（UUID）</label>
+                        <input type="text" name="accountId" class="form-control" id="Coupon-accountId">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-menuId" class="control-label">优惠券套餐Id</label>
+                        <input type="text" name="menuId" class="form-control" id="Coupon-menuId">
+                    </div>
+                    <div class="form-group">
+                        <label for="Order-validDate" class="control-label">优惠券生效时间</label>
+                        <input type="date" name="validDate" class="form-control" id="Coupon-validDate">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="addCoupon">补单</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--给特定用户分配优惠券-->
+
+<!--查找用户-->
+<div class="modal fade" id="searchAccountDiv" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel6">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content" style="width: 1000px;margin-left: -100px;">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                </button>
+                <h4 class="modal-title" id="exampleModalLabel6">查找特定用户</h4>
+            </div>
+            <div class="modal-body" style="margin-bottom: -15px;">
+                <div>
+                    <select style="width: 200px;display: inline-block;padding: 4px 6px" id="typeSelect"
+                            class="form-control">
+                        <option value="" selected="selected">全部</option>
+                        <option value="1">个人</option>
+                        <option value="2">企业</option>
+                    </select>
+                    <input type="text" class="form-control" id="searchName" style="display: inline-block;width:200px;"
+                           placeholder="输入姓名或企业名称">
+                    <input type="text" class="form-control" id="searchMobile"
+                           style="display: inline-block;width:200px;margin-left:15px;" placeholder="输入手机号">
+                    <input type="text" class="form-control" id="searchEmail"
+                           style="display: inline-block;width:200px;margin-left:15px;" placeholder="输入邮箱">
+                    <button type="button" class="btn btn-warning" style="margin-left:15px;" id="searchAccountBtn">
+                        <span class="glyphicon glyphicon-search"></span>查找
+                    </button>
+                </div>
+                <table id="account-list-table" data-toggle="table"
+                       data-click-to-select="true" data-select-item-name="myRadioName"
+                       data-locale="zh_CN">
+                    <thead>
+                    <tr>
+                        <th data-field="" data-radio="true">选择</th>
+                        <th data-field="accountUid" data-visible="false">用户Id</th>
+                        <th data-field="name">姓名/企业名称</th>
+                        <th data-field="mobile">手机号</th>
+                        <th data-field="mail">邮箱</th>
+                        <th data-field="createTime">注册时间</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="selectAccount">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end查找用户-->
+
+<div class="alert alert-danger" role="alert" id="alert-error"
+     style="position: fixed;width: 100%; bottom: 0;display: none;">
+    <button type="button" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+    <strong id="error-msg">ERROR!</strong>
+</div>
+
+<div id="resultado"></div>
+<!-- 内容html end-->
+<!-- footer html start-->
+<div class="col-md-12" style="height:150px;"></div>
+<footer class="footer">Copyright © 2015 杭州天谷信息科技有限公司 版权所有.　浙ICP备11026113号</footer>
+<!-- footer html end-->
+
+<script>
+</script>
+</body>
+</html>

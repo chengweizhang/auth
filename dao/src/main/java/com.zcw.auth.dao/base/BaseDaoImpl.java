@@ -151,7 +151,7 @@ public abstract class BaseDaoImpl<T, U extends Serializable> implements
     }
 
     protected Session getCurrentSession() {
-        SessionFactory usedSessionFactory = entityManagerFactory.unwrap(SessionFactory.class);;
+        SessionFactory usedSessionFactory = entityManagerFactory.unwrap(SessionFactory.class);
         Table annotation = entityClass.getAnnotation(Table.class);
         if (annotation == null || "esign_treaty".equals(annotation.schema())) {
         }
@@ -163,6 +163,7 @@ public abstract class BaseDaoImpl<T, U extends Serializable> implements
         hql.append(tableName).append(" where id = :id");
         Query q = getCurrentSession().createQuery(hql.toString());
         q.setString("id", id.toString());
+        getCurrentSession().flush();
         return q.executeUpdate();
     }
 

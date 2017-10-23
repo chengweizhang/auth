@@ -13,6 +13,8 @@ public class Page {
 
     public static final Order DEFAULT_ORDER = Order.desc("updateTime");
 
+    public static final int BATCH_SIZE = 30;
+
     private Integer page;
 
     private Integer pageSize;

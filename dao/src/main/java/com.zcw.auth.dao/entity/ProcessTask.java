@@ -5,11 +5,10 @@ import com.zcw.auth.dao.entity.base.BaseEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.util.Date;
 
 
 @Entity
-@Table(name = "app_process_task")
+@Table(name = "auth_process_task")
 public class ProcessTask extends BaseEntity<String> {
 
     private String staffId;
@@ -30,9 +29,6 @@ public class ProcessTask extends BaseEntity<String> {
     private int type;
     private String title;
 
-    private Date startTime;
-    private Date endTime;
-
     public String getStaffId() {
         return staffId;
     }
@@ -48,24 +44,6 @@ public class ProcessTask extends BaseEntity<String> {
 
     public ProcessTask setRemark(String remark) {
         this.remark = remark;
-        return this;
-    }
-
-    public Date getStartTime() {
-        return startTime;
-    }
-
-    public ProcessTask setStartTime(Date startTime) {
-        this.startTime = startTime;
-        return this;
-    }
-
-    public Date getEndTime() {
-        return endTime;
-    }
-
-    public ProcessTask setEndTime(Date endTime) {
-        this.endTime = endTime;
         return this;
     }
 

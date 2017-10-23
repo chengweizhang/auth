@@ -20,6 +20,9 @@ subprojects {
     dependencies {
         compile("org.springframework.boot:spring-boot-starter-web:1.5.7.RELEASE")
 
+        //util
+        compile("org.apache.commons:commons-lang3:3.4")
+
         //security
         compile("org.springframework.boot:spring-boot-starter-security:1.5.7.RELEASE")
 
