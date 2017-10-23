@@ -8,15 +8,19 @@ import com.zcw.auth.dao.entity.Role;
 import com.zcw.auth.service.AccountService;
 import com.zcw.auth.service.GeneralServiceImpl;
 import com.zcw.auth.web.controller.common.Result;
-import com.zcw.auth.web.controller.common.SessionUtil;
 import com.zcw.auth.web.controller.entity.CommonC;
 import com.zcw.auth.web.controller.entity.LoginC;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
@@ -41,10 +45,11 @@ public class AccountController extends BaseController {
     private AccountService accountService;
 
     /**
-     * 用户更新,只能改名字，密码，地址
+     * 账号新增和更新
      *
      * @return
      */
+    @Secured("ROLE_ADMIN")
     @RequestMapping(path = "", method = {RequestMethod.PUT, RequestMethod.POST})
     public ResponseEntity<Result> update(@RequestBody Account account, HttpServletRequest request) {
         accountService.saveOrUpdate(account);
@@ -87,6 +92,7 @@ public class AccountController extends BaseController {
      * @param request
      * @return
      */
+    @Secured("ROLE_ADMIN")
     @RequestMapping(path = "/role/{accountId}", method = RequestMethod.POST)
     public ResponseEntity<Result> addRole(@RequestBody CommonC commonC, @PathVariable String accountId, HttpServletRequest request) {
         List<AccountRoleR> accountRoleRs = new ArrayList<>();
@@ -132,8 +138,8 @@ public class AccountController extends BaseController {
      * @return
      */
     @RequestMapping(path = "", method = RequestMethod.GET)
+    @Secured({"ROLE_USER", "ROLE_ADMIN"})
     public ResponseEntity<Result> get(AccountQuery accountQuery, @RequestParam Map<String, String> params, HttpServletRequest request) {
-        SessionUtil.getCurrentUser(request);
         Page page = getPage(params);
         List<Account> accounts = accountService.findByQuery(accountQuery, page);
         Long countByQuery = accountService.getCountByQuery(accountQuery);
@@ -155,8 +161,11 @@ public class AccountController extends BaseController {
      * @return
      */
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
-    public ResponseEntity<Result> logout(HttpServletRequest request) {
-        SessionUtil.clearLoginInfor(request);
+    public ResponseEntity<Result> logout(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null) {
+            new SecurityContextLogoutHandler().logout(request, response, auth);
+        }
         return getResult(null);
     }
 
@@ -168,7 +177,7 @@ public class AccountController extends BaseController {
      */
     @RequestMapping(path = "/user", method = RequestMethod.GET)
     public ResponseEntity<Result> getCurrent(HttpServletRequest request) {
-        Account currentUser = SessionUtil.getCurrentUser(request);
-        return getResult(currentUser);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return getResult(principal);
     }
 }
