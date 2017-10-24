@@ -30,8 +30,14 @@ class="org.springframework.security.authentication.ProviderManager">
 </constructor-arg>
 </bean>
 ```
+
+##Secure Objects and the AbstractSecurityInterceptor
+![Security interceptors and the "secure object" model](https://docs.spring.io/spring-security/site/docs/4.2.3.RELEASE/reference/html/images/security-interception.png)
+
 ##AccessDecisionManager
 authorization decision
+![Voting Decision Manager](https://docs.spring.io/spring-security/site/docs/4.2.3.RELEASE/reference/html/images/access-decision-voting.png)
+
 
 ###ref:
 https://docs.spring.io/spring-security/site/docs/4.2.3.RELEASE/reference/pdf/spring-security-reference.pdf
